@@ -56,7 +56,7 @@ app_setup_block: |
 
 # changelog
 changelogs:
-  - { date: "12.06.19:", desc: "Rebase to Alpine 3.9 & adapt startup script to changes in ProjectSend r1053 - Thanks to tomkuba" }
+  - { date: "12.06.19:", desc: "Adapt startup script to changes in ProjectSend r1053 - Thanks to tomkuba" }
   - { date: "23.03.19:", desc: "Switching to new Base images, shift to arm32v7 tag." }
   - { date: "11.02.19:", desc: "Add pipeline logic and multi arch." }
   - { date: "11.06.17:", desc: "Fetch version from github." }

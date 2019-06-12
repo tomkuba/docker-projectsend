@@ -196,7 +196,7 @@ Once registered you can define the dockerfile to use with `-f Dockerfile.aarch64
 
 ## Versions
 
-* **12.06.19:** - Rebase to Alpine 3.9 & adapt startup script to changes in ProjectSend r1053 - Thanks to tomkuba
+* **12.06.19:** - Adapt startup script to changes in ProjectSend r1053 - Thanks to tomkuba
 * **23.03.19:** - Switching to new Base images, shift to arm32v7 tag.
 * **11.02.19:** - Add pipeline logic and multi arch.
 * **11.06.17:** - Fetch version from github.
