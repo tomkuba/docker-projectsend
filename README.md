@@ -1,134 +1,204 @@
-[linuxserverurl]: https://linuxserver.io
-[forumurl]: https://forum.linuxserver.io
-[ircurl]: https://www.linuxserver.io/irc/
-[podcasturl]: https://www.linuxserver.io/podcast/
-[appurl]: http://www.projectsend.org
-[hub]: https://hub.docker.com/r/linuxserver/projectsend/
+[![linuxserver.io](https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/linuxserver_medium.png)](https://linuxserver.io)
 
-[![linuxserver.io](https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/linuxserver_medium.png)][linuxserverurl]
+The [LinuxServer.io](https://linuxserver.io) team brings you another container release featuring :-
 
-The [LinuxServer.io][linuxserverurl] team brings you another container release featuring easy user mapping and community support. Find us for support at:
-* [forum.linuxserver.io][forumurl]
-* [IRC][ircurl] on freenode at `#linuxserver.io`
-* [Podcast][podcasturl] covers everything to do with getting the most from your Linux Server plus a focus on all things Docker and containerisation!
+ * regular and timely application updates
+ * easy user mappings (PGID, PUID)
+ * custom base image with s6 overlay
+ * weekly base OS updates with common layers across the entire LinuxServer.io ecosystem to minimise space usage, down time and bandwidth
+ * regular security updates
 
-# linuxserver/projectsend
-[![](https://images.microbadger.com/badges/version/linuxserver/projectsend.svg)](https://microbadger.com/images/linuxserver/projectsend "Get your own version badge on microbadger.com")[![](https://images.microbadger.com/badges/image/linuxserver/projectsend.svg)](https://microbadger.com/images/linuxserver/projectsend "Get your own image badge on microbadger.com")[![Docker Pulls](https://img.shields.io/docker/pulls/linuxserver/projectsend.svg)][hub][![Docker Stars](https://img.shields.io/docker/stars/linuxserver/projectsend.svg)][hub][![Build Status](https://ci.linuxserver.io/buildStatus/icon?job=Docker-Builders/x86-64/x86-64-projectsend)](https://ci.linuxserver.io/job/Docker-Builders/job/x86-64/job/x86-64-projectsend/)
+Find us at:
+* [Discord](https://discord.gg/YWrKVTn) - realtime support / chat with the community and the team.
+* [IRC](https://irc.linuxserver.io) - on freenode at `#linuxserver.io`. Our primary support channel is Discord.
+* [Blog](https://blog.linuxserver.io) - all the things you can do with our containers including How-To guides, opinions and much more!
 
-[ProjectSend][appurl] is a self-hosted application that lets you upload files and assign them to specific clients that you create yourself! Secure, private and easy. No more depending on external services or e-mail to send those files!
+# [linuxserver/projectsend](https://github.com/linuxserver/docker-projectsend)
+[![](https://img.shields.io/discord/354974912613449730.svg?logo=discord&label=LSIO%20Discord&style=flat-square)](https://discord.gg/YWrKVTn)
+[![](https://images.microbadger.com/badges/version/linuxserver/projectsend.svg)](https://microbadger.com/images/linuxserver/projectsend "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/linuxserver/projectsend.svg)](https://microbadger.com/images/linuxserver/projectsend "Get your own version badge on microbadger.com")
+![Docker Pulls](https://img.shields.io/docker/pulls/linuxserver/projectsend.svg)
+![Docker Stars](https://img.shields.io/docker/stars/linuxserver/projectsend.svg)
+[![Build Status](https://ci.linuxserver.io/buildStatus/icon?job=Docker-Pipeline-Builders/docker-projectsend/master)](https://ci.linuxserver.io/job/Docker-Pipeline-Builders/job/docker-projectsend/job/master/)
+[![](https://lsio-ci.ams3.digitaloceanspaces.com/linuxserver/projectsend/latest/badge.svg)](https://lsio-ci.ams3.digitaloceanspaces.com/linuxserver/projectsend/latest/index.html)
 
-[![projectsend](http://www.projectsend.org/wp-content/themes/projectsend/img/screenshots.png)][appurl]
+[Projectsend](http://www.projectsend.org) is a self-hosted application that lets you upload files and assign them to specific clients that you create yourself. Secure, private and easy. No more depending on external services or e-mail to send those files.
+
+[![projectsend](http://www.projectsend.org/wp-content/themes/projectsend/img/screenshots.png)](http://www.projectsend.org)
+
+## Supported Architectures
+
+Our images support multiple architectures such as `x86-64`, `arm64` and `armhf`. We utilise the docker manifest for multi-platform awareness. More information is available from docker [here](https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#manifest-list) and our announcement [here](https://blog.linuxserver.io/2019/02/21/the-lsio-pipeline-project/). 
+
+Simply pulling `linuxserver/projectsend` should retrieve the correct image for your arch, but you can also pull specific arch images via tags.
+
+The architectures supported by this image are:
+
+| Architecture | Tag |
+| :----: | --- |
+| x86-64 | amd64-latest |
+| arm64 | arm64v8-latest |
+| armhf | arm32v7-latest |
+
 
 ## Usage
+
+Here are some example snippets to help you get started creating a container.
+
+### docker
 
 ```
 docker create \
   --name=projectsend \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Europe/London \
+  -e MAX_UPLOAD=<5000> \
+  -e DB_HOST=mariadb \
+  -e DB_NAME=projectsend \
+  -e DB_USER=dbuser \
+  -e DB_PASSWORD=dbuser-password \
+  -p 80:80 \
   -v <path to data>:/config \
   -v <path to data>:/data \
-  -e PGID=<gid> -e PUID=<uid>  \
-  -e MAX_UPLOAD=<5000> \
-  -p 80:80 \
+  --restart unless-stopped \
   linuxserver/projectsend
+```
+
+
+### docker-compose
+
+Compatible with docker-compose v2 schemas.
+
+```
+---
+version: "2"
+services:
+  projectsend:
+    image: linuxserver/projectsend
+    container_name: projectsend
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - MAX_UPLOAD=<5000>
+      - DB_HOST=mariadb
+      - DB_NAME=projectsend
+      - DB_USER=dbuser
+      - DB_PASSWORD=dbuser-password
+    volumes:
+      - <path to data>:/config
+      - <path to data>:/data
+    ports:
+      - 80:80
+    restart: unless-stopped
 ```
 
 ## Parameters
 
-`The parameters are split into two halves, separated by a colon, the left hand side representing the host and the right the container side. 
-For example with a port -p external:internal - what this shows is the port mapping from internal to external of the container.
-So -p 8080:80 would expose port 80 from inside the container to be accessible from the host's IP on port 8080
-http://192.168.x.x:8080 would show you what's running INSIDE the container on port 80.`
+Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
 
+| Parameter | Function |
+| :----: | --- |
+| `-p 80` | WebUI |
+| `-e PUID=1000` | for UserID - see below for explanation |
+| `-e PGID=1000` | for GroupID - see below for explanation |
+| `-e TZ=Europe/London` | Specify a timezone to use EG Europe/London. |
+| `-e MAX_UPLOAD=<5000>` | To set maximum upload size (in MB), default if unset is 5000. |
+| `-e DB_HOST=mariadb` | Set your database location here using IP,hostname or docker container name |
+| `-e DB_NAME=projectsend` | Pre-existing database name, default if unset is projectsend. |
+| `-e DB_USER=dbuser` | Database user with permissions on above database, default if unset is root. |
+| `-e DB_PASSWORD=dbuser-password` | Password for above user. |
+| `-v /config` | Where to store projectsend config files. |
+| `-v /data` | Where to store files to share. |
 
+## User / Group Identifiers
 
-* `-p 80` - the port(s)
-* `-v /config` - where to store projectsend config files
-* `-v /data` - where to store files to share.
-* `-e PGID` for GroupID - see below for explanation
-* `-e PUID` for UserID - see below for explanation
-* `-e DB_HOST` for database hostname
-* `-e DB_PASSWORD` for database password
-* `-e MAX_UPLOAD` to set maximum upload size (in MB), default if unset is 5000.
+When using volumes (`-v` flags) permissions issues can arise between the host OS and the container, we avoid this issue by allowing you to specify the user `PUID` and group `PGID`.
 
-It is based on alpine linux with s6 overlay, for shell access whilst the container is running do `docker exec -it projectsend /bin/bash`.
+Ensure any volume directories on the host are owned by the same user you specify and any permissions issues will vanish like magic.
 
-### User / Group Identifiers
-
-Sometimes when using data volumes (`-v` flags) permissions issues can arise between the host OS and the container. We avoid this issue by allowing you to specify the user `PUID` and group `PGID`. Ensure the data volume directory on the host is owned by the same user you specify and it will "just work" ™.
-
-In this instance `PUID=1001` and `PGID=1001`. To find yours use `id user` as below:
+In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as below:
 
 ```
-  $ id <dockeruser>
-    uid=1001(dockeruser) gid=1001(dockergroup) groups=1001(dockergroup)
+  $ id username
+    uid=1000(dockeruser) gid=1000(dockergroup) groups=1000(dockergroup)
 ```
 
-## Setting up the application
 
-Requires a user and database in either mssql, mysql or mariadb.
+&nbsp;
+## Application Setup
 
-Following environment variables can be used to configure database connection:
+You are required to setup a database in either mysql or mariadb with appropriate permissions before install.
+The webui will be available at http://<IP>:<HOST_PORT>/ to complete setup. 
+More info at [ProjectSend](http://www.projectsend.org).
 
-* `DB_DRIVER` - value can be `mssql` or `mysql` (default: mssql)
-* `DB_HOST` - database hostname (must be specified)
-* `DB_NAME` - name of the database (default: projectsend)
-* `DB_USER` - database username (default: root)
-* `DB_PASSWORD` - database password (must be specified)
 
-On first run go to `http://<your-ip>` and finish installation wizard.
 
-More info at [ProjectSend][appurl].
-
-## Sample docker-compose.yml
-
-This is example of `docker-compose.yml` file to run ProjectSend with [MariaDB](https://hub.docker.com/_/mariadb/):
-
-```yml
-version: '2'
-
-services:
-   db:
-     image: mariadb:10.2.14
-     volumes:
-       - db_data:/var/lib/mysql
-     restart: always
-     environment:
-       MYSQL_ROOT_PASSWORD: change_me
-       MYSQL_DATABASE: projectsend
-
-   projectsend:
-     depends_on:
-       - db
-     image: linuxserver/projectsend:latest
-     ports:
-       - "8000:80"
-     restart: always
-     volumes:
-       - project_send_data:/data
-     environment:
-       DB_HOST: db
-       DB_PASSWORD: change_me
-
-volumes:
-    db_data:
-    project_send_data:
-```
-
-## Info
+## Support Info
 
 * Shell access whilst the container is running: `docker exec -it projectsend /bin/bash`
 * To monitor the logs of the container in realtime: `docker logs -f projectsend`
-
 * container version number 
-
-`docker inspect -f '{{ index .Config.Labels "build_version" }}' projectsend`
-
+  * `docker inspect -f '{{ index .Config.Labels "build_version" }}' projectsend`
 * image version number
+  * `docker inspect -f '{{ index .Config.Labels "build_version" }}' linuxserver/projectsend`
 
-`docker inspect -f '{{ index .Config.Labels "build_version" }}' linuxserver/projectsend`
+## Updating Info
+
+Most of our images are static, versioned, and require an image update and container recreation to update the app inside. With some exceptions (ie. nextcloud, plex), we do not recommend or support updating apps inside the container. Please consult the [Application Setup](#application-setup) section above to see if it is recommended for the image.  
+  
+Below are the instructions for updating containers:  
+  
+### Via Docker Run/Create
+* Update the image: `docker pull linuxserver/projectsend`
+* Stop the running container: `docker stop projectsend`
+* Delete the container: `docker rm projectsend`
+* Recreate a new container with the same docker create parameters as instructed above (if mapped correctly to a host folder, your `/config` folder and settings will be preserved)
+* Start the new container: `docker start projectsend`
+* You can also remove the old dangling images: `docker image prune`
+
+### Via Docker Compose
+* Update all images: `docker-compose pull`
+  * or update a single image: `docker-compose pull projectsend`
+* Let compose update all containers as necessary: `docker-compose up -d`
+  * or update a single container: `docker-compose up -d projectsend`
+* You can also remove the old dangling images: `docker image prune`
+
+### Via Watchtower auto-updater (especially useful if you don't remember the original parameters)
+* Pull the latest image at its tag and replace it with the same env variables in one run:
+  ```
+  docker run --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  containrrr/watchtower \
+  --run-once projectsend
+  ```
+* You can also remove the old dangling images: `docker image prune`
+
+## Building locally
+
+If you want to make local modifications to these images for development purposes or just to customize the logic: 
+```
+git clone https://github.com/linuxserver/docker-projectsend.git
+cd docker-projectsend
+docker build \
+  --no-cache \
+  --pull \
+  -t linuxserver/projectsend:latest .
+```
+
+The ARM variants can be built on x86_64 hardware using `multiarch/qemu-user-static`
+```
+docker run --rm --privileged multiarch/qemu-user-static:register --reset
+```
+
+Once registered you can define the dockerfile to use with `-f Dockerfile.aarch64`.
 
 ## Versions
-+ **04.10.18:** Adapt startup script to changes in ProjectSend r1053
-+ **11.06.17:** Fetch version from github.
-+ **09.12.17:** Rebase to alpine 3.7.
-+ **13.06.17:** Initial Release.
+
+* **12.06.19:** - Rebase to Alpine 3.9 & adapt startup script to changes in ProjectSend r1053 - Thanks to tomkuba
+* **23.03.19:** - Switching to new Base images, shift to arm32v7 tag.
+* **11.02.19:** - Add pipeline logic and multi arch.
+* **11.06.17:** - Fetch version from github.
+* **09.12.17:** - Rebase to alpine 3.7.
+* **13.06.17:** - Initial Release.
